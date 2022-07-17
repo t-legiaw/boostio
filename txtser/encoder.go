@@ -36,7 +36,7 @@ func (enc *Encoder) writeHeader() {
 		enc.Header = enc.w.arch.Header()
 	}
 
-	enc.w.WriteString(magicHeader)
+	enc.w.WriteString(magicHeaderSignature)
 	enc.w.WriteHeader(enc.Header)
 }
 

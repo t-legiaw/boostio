@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	magicHeader = "serialization::archive"
+	magicHeaderSignature = "serialization::archive"
 )
 
 var (
@@ -40,6 +40,7 @@ var (
 	ErrInvalidTypeDescr = errors.New("txtser: invalid Boost textual archive type descriptor")
 	ErrTypeNotSupported = errors.New("txtser: type not supported")
 	ErrInvalidArrayLen  = errors.New("txtser: invalid array type")
+	ErrNotADelimiter    = errors.New("txtser: not a delimiter")
 )
 
 // Arch describes the size of on-disk pointers.
@@ -61,6 +62,7 @@ func (a Arch) NewEncoder(w io.Writer) *Encoder {
 }
 
 func (a Arch) Header() Header {
+	// this doesn't make sense for textual archives - ignored for now ...
 	switch a {
 	case 0:
 		return ArchHW.Header()
@@ -74,7 +76,8 @@ func (a Arch) Header() Header {
 }
 
 var (
-	zeroHdr   Header
+	zeroHdr Header
+
 	bser64Hdr = Header{
 		Version: boostio.Version,
 		Flags: binary.LittleEndian.Uint64([]byte{
@@ -123,7 +126,8 @@ func (hdr *Header) UnmarshalBoost(r *RBuffer) error {
 		return r.err
 	}
 	hdr.Version = r.ReadU16()
-	hdr.Flags = r.ReadU64()
+	// hdr.Flags = r.ReadU64()
+	hdr.Flags = 0
 	return r.err
 }
 
